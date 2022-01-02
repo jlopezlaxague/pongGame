@@ -19,8 +19,8 @@ const start = function () {
   right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
   right.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
   left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
-  ball.style.top = `${100}px`; //generate random
-  ball.style.left = `${400}px`;
+  ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`; //generate random
+  ball.style.left = `${20}px`;
   stillPlaying = true;
   ballStepper();
   document.addEventListener("keydown", humanPlayer);
@@ -60,8 +60,14 @@ const ballStepper = function () {
       if (initTop <= vMin || initTop >= vMax) {
         vSense = -vSense;
       }
-      ball.style.top = `${initTop + vSense * vBallStep}px`;
-      ball.style.left = `${initLeft + hSense * hBallStep}px`;
+      if (initTop + vSense * vBallStep <= vMin) {
+        ball.style.top = `${vMin}px`;
+      } else if (initTop + vSense * vBallStep >= vMax) {
+        ball.style.top = `${vMax}px`;
+      } else {
+        ball.style.top = `${initTop + vSense * vBallStep}px`;
+        ball.style.left = `${initLeft + hSense * hBallStep}px`;
+      }
     }
   }, time);
 };
