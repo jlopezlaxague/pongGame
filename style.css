@@ -1,0 +1,119 @@
+:root {
+    --courtHeigth: 500px;
+    --courtWidth: 1000px;
+    --tableColor: #3d405b;
+    --backColor: #81b29a;
+    --pleftColor: #e09f3e;
+    --prightColor: #e09f3e;
+    --ballColor: #f9f9f9;
+    --lineColor: #f9f9f9
+}
+
+
+
+body {
+    background-color: var(--backColor);
+    height: 100%;
+}
+
+.global-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.court {
+    display: flex;
+    background-color: var(--tableColor);
+    width: var(--courtWidth);
+    height: var(--courtHeigth);
+    border-style: solid;
+    color: white;
+    border-width: 2px;
+    background-image: linear-gradient(var(--lineColor), var(--lineColor));
+    background-size: 2px 100%;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.half-line-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%
+}
+
+.half-line {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    border-style: dashed;
+    color: white;
+    border-width: 2px;
+    width: 0rem;
+    height: 100%
+}
+
+.player {
+    border-style: solid;
+    color: white;
+    border-width: 1px;
+    width: 10px;
+    height: 100px;
+    display: block;
+}
+
+.player.right {
+    background-color: var(--prightColor);
+    margin-top: 0px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    /* left: var(--courtWidth); */
+}
+
+.player.left {
+    background-color: var(--pleftColor);
+    margin-top: 0px;
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+
+.ball {
+    background-color: var(--ballColor);
+    height: 15px;
+    width: 15px;
+    border-radius: 15px;
+    position: relative;
+    top: 0px;
+    left: 10px;
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+.number-score {
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    margin: 20px;
+    padding-bottom: 100%;
+    font-size: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 0.8rem;
+    background-color: var(--tableColor);
+    border-style: solid;
+    color: var(--lineColor);
+    border-width: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
