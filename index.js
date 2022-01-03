@@ -5,6 +5,8 @@ const right = document.getElementById("right");
 const ball = document.getElementById("ball");
 const rightScore = document.getElementById("rightScore");
 const leftScore = document.getElementById("leftScore");
+const ballSpeedSlider = document.getElementById("ballSpeedSlider");
+const ballSpeedDisplay = document.getElementById("ballSpeed");
 const difficultySlider = document.getElementById("difficultySlider");
 const difficultyDisplay = document.getElementById("difficulty");
 const courtHeigth = court.clientHeight;
@@ -12,20 +14,19 @@ const courtWidth = court.clientWidth;
 const playerWidht = right.offsetWidth;
 const playerHeigth = right.offsetHeight;
 const ballSize = ball.offsetWidth;
-const hBallStepMax = 7;
-const hBallStepMin = 3;
-let hBallStep = (hBallStepMax + hBallStepMin) / 2;
-let vBallStep = hBallStep / hBallStepMin;
+const hBallStepMax = 8;
+const hBallStepMin = 2;
 const ballTime = 2;
 const playersTime = ballTime * 2;
-const hardMax = 0.034;
-const hardMin = 0.011;
-let hard = (hardMax + hardMin) / 2;
+const hardMax = 0.04;
+const hardMin = 0.005;
 let computerInterval;
 let ballInterval;
 let playerInterval;
 let stillPlaying = true;
 let pause = false;
+let point = "left";
+let hSense = 1;
 
 const setUp = function () {
   right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
@@ -33,8 +34,11 @@ const setUp = function () {
   left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
   ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
   ball.style.left = `${20}px`;
+  setballSpeed(null, 50);
+  setDifficulty(null, 50);
   document.addEventListener("keydown", setKeyPressed);
   document.addEventListener("keyup", setKeyPressed);
+  ballSpeedSlider.addEventListener("change", setballSpeed);
   difficultySlider.addEventListener("change", setDifficulty);
 };
 
@@ -42,8 +46,13 @@ const start = function () {
   right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
   right.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
   left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
-  ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
-  ball.style.left = `${20}px`;
+  if (point == "left") {
+    ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
+    ball.style.left = `${20}px`;
+  } else {
+    ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
+    ball.style.left = `${courtWidth - playerWidht - ballSize - 20}px`;
+  }
   stillPlaying = true;
   keyPressed = "";
   ballStepper();
@@ -52,7 +61,6 @@ const start = function () {
 };
 
 const ballStepper = function () {
-  let hSense = 1;
   let vSense = 1;
   const hMin = 0;
   const hMax = courtWidth - ballSize - 2 * playerWidht;
@@ -74,9 +82,13 @@ const ballStepper = function () {
 
     // Point
     if (initLeft >= hMax && (initTop + ballSize < vRightMin || initTop > vRightMax)) {
+      point = "left";
+      hSense = 1;
       return await score("left");
     }
     if (initLeft <= hMin && (initTop + ballSize < vLeftMin || initTop > vLeftMax)) {
+      point = "right";
+      hSense = -1;
       return await score("right");
     }
 
@@ -202,16 +214,33 @@ const setKeyPressed = function (event) {
   }
 };
 
-const setDifficulty = function (event) {
-  hard = hardMin + ((hardMax - hardMin) / 100) * event.target.value;
-  hBallStep = hBallStepMin + ((hBallStepMax - hBallStepMin) / 100) * event.target.value;
-  vBallStep = hBallStep / hBallStepMin;
+const setballSpeed = function (event, percent) {
+  let percentValue = 0;
+  if (event) {
+    percentValue = event.target.value;
+  } else {
+    percentValue = percent;
+  }
 
+  hBallStep = hBallStepMin + ((hBallStepMax - hBallStepMin) / 100) * percentValue;
+  vBallStep = hBallStep / 2;
   if (vBallStep < 1) {
     vBallStep = 1;
   }
+  ballSpeedDisplay.textContent = percentValue;
+};
 
-  difficultyDisplay.textContent = event.target.value;
+const setDifficulty = function (event, percent) {
+  let percentValue = 0;
+  if (event) {
+    percentValue = event.target.value;
+  } else {
+    percentValue = percent;
+  }
+
+  hard = hardMin + ((hardMax - hardMin) / 100) * percentValue;
+  difficultyDisplay.textContent = percentValue;
+  console.log("hard", hard);
 };
 
 setUp();
