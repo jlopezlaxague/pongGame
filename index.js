@@ -27,6 +27,7 @@ let stillPlaying = true;
 let pause = false;
 let point = "left";
 let hSense = 1;
+let started = false;
 
 const setUp = function () {
   right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
@@ -210,7 +211,10 @@ const setKeyPressed = function (event) {
     pause = !pause;
   }
   if (event.key == "s" && event.type == "keydown") {
-    start();
+    if (!started) {
+      started = true;
+      start();
+    }
   }
 };
 
