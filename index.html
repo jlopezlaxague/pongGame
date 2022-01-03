@@ -11,6 +11,7 @@
 
 <body>
     <div class='global-wrapper' id="globalWrapper">
+
         <div class="score" id="score">
             <div class="number-score" id="leftScore">0</div>
             <div class="number-score" id="rightScore">0</div>
@@ -20,6 +21,23 @@
             <div class="player left" id="left"></div>
             <div class="ball" id="ball"></div>
             <div class="player right" id="right"></div>
+        </div>
+        <div class="options-wrapper">
+            <div class="settings-wrapper">
+                <div class="leyend-wrapper">
+                    <div>Difficulty</div>
+                    <div id="difficulty">50</div>
+                </div>
+                <input type="range" min="0" max="100" value="50" class="slider" id="difficultySlider">
+            </div>
+            <div class="instructions-wrapper">
+                <div class="instructions">
+                    ( s ): start <br>
+                    ( space ): pause/resume <br>
+                    ( arrow up ) : moove up <br>
+                    ( arrow down) : moove down
+                </div>
+            </div>
         </div>
     </div>
 </body>

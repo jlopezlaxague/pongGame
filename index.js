@@ -5,23 +5,40 @@ const right = document.getElementById("right");
 const ball = document.getElementById("ball");
 const rightScore = document.getElementById("rightScore");
 const leftScore = document.getElementById("leftScore");
+const difficultySlider = document.getElementById("difficultySlider");
+const difficultyDisplay = document.getElementById("difficulty");
 const courtHeigth = court.clientHeight;
 const courtWidth = court.clientWidth;
 const playerWidht = right.offsetWidth;
 const playerHeigth = right.offsetHeight;
 const ballSize = ball.offsetWidth;
-const hBallStep = 4;
-const vBallStep = hBallStep / 3;
+const hBallStepMax = 7;
+const hBallStepMin = 3;
+let hBallStep = (hBallStepMax + hBallStepMin) / 2;
+let vBallStep = hBallStep / hBallStepMin;
 const ballTime = 2;
 const playersTime = ballTime * 2;
-const hard = 0.018;
+const hardMax = 0.034;
+const hardMin = 0.011;
+let hard = (hardMax + hardMin) / 2;
 let computerInterval;
 let ballInterval;
 let playerInterval;
 let stillPlaying = true;
+let pause = false;
+
+const setUp = function () {
+  right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
+  right.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
+  left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
+  ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
+  ball.style.left = `${20}px`;
+  document.addEventListener("keydown", setKeyPressed);
+  document.addEventListener("keyup", setKeyPressed);
+  difficultySlider.addEventListener("change", setDifficulty);
+};
 
 const start = function () {
-  console.log("restart");
   right.style.left = `${courtWidth - 2 * playerWidht - ballSize}px`;
   right.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
   left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
@@ -30,8 +47,6 @@ const start = function () {
   stillPlaying = true;
   keyPressed = "";
   ballStepper();
-  document.addEventListener("keydown", setKeyPressed);
-  document.addEventListener("keyup", setKeyPressed);
   playerInterval = setInterval(humanPlayer, playersTime);
   computerPlayer();
 };
@@ -45,45 +60,59 @@ const ballStepper = function () {
   const vMax = courtHeigth - ballSize;
 
   ballInterval = setInterval(async function () {
-    let initTop = Math.abs(parseInt(ball.style.top.slice(0, -2)));
-    let initLeft = Math.abs(parseInt(ball.style.left.slice(0, -2)));
+    if (pause) return null;
+    let initTop = parseInt(ball.style.top.slice(0, -2));
+    let initLeft = parseInt(ball.style.left.slice(0, -2));
     let vRightMin = Math.abs(parseInt(right.style.top.slice(0, -2)));
     let vRightMax = Math.abs(parseInt(right.style.top.slice(0, -2))) + playerHeigth;
     let vLeftMin = Math.abs(parseInt(left.style.top.slice(0, -2)));
     let vLeftMax = Math.abs(parseInt(left.style.top.slice(0, -2))) + playerHeigth;
 
+    if (initLeft < hMin) {
+      initLeft = hMin;
+    }
+
     // Point
-    if (initLeft > hMax && (initTop + ballSize < vRightMin || initTop > vRightMax)) {
+    if (initLeft >= hMax && (initTop + ballSize < vRightMin || initTop > vRightMax)) {
       return await score("left");
     }
-    if (initLeft < hMin && (initTop + ballSize < vLeftMin || initTop > vLeftMax)) {
+    if (initLeft <= hMin && (initTop + ballSize < vLeftMin || initTop > vLeftMax)) {
       return await score("right");
     }
 
-    // Heat or court limits
+    // Heat player or court limits
     if (stillPlaying) {
-      if (
-        (initLeft <= hMin || initLeft >= hMax) &&
-        (initLeft - hSense * hBallStep > hMin || initLeft - hSense * hBallStep < hMax)
-      ) {
+      if (initLeft <= hMin || initLeft >= hMax) {
         hSense = -hSense;
       }
       if (initTop <= vMin || initTop >= vMax) {
         vSense = -vSense;
       }
-      if (initTop + vSense * vBallStep <= vMin) {
-        ball.style.top = `${vMin}px`;
-      } else if (initTop + vSense * vBallStep >= vMax) {
-        ball.style.top = `${vMax}px`;
+
+      if (initLeft + hSense * hBallStep < hMin) {
+        hBallPos = hMin;
+      } else if (initLeft + hSense * hBallStep > hMax) {
+        hBallPos = hMax;
       } else {
-        ball.style.top = `${initTop + vSense * vBallStep}px`;
-        ball.style.left = `${initLeft + hSense * hBallStep}px`;
+        hBallPos = initLeft + hSense * hBallStep;
       }
+
+      if (initTop + vSense * vBallStep < vMin) {
+        vBallPos = vMin;
+      } else if (initTop + vSense * vBallStep > vMax) {
+        vBallPos = vMax;
+      } else {
+        vBallPos = initTop + vSense * vBallStep;
+      }
+
+      ball.style.left = `${hBallPos}px`;
+      ball.style.top = `${vBallPos}px`;
     }
   }, ballTime);
 };
 
 const humanPlayer = function (event) {
+  if (pause) return null;
   if (keyPressed == "ArrowUp" || keyPressed == "ArrowDown") {
     const playerStep = 2;
     const topInit = Math.abs(parseInt(right.style.top.slice(0, -2)));
@@ -103,6 +132,7 @@ const humanPlayer = function (event) {
 };
 
 const computerPlayer = function () {
+  if (pause) return null;
   let stepLength;
   computerInterval = setInterval(() => {
     let topInit = Math.abs(parseInt(left.style.top.slice(0, -2)));
@@ -121,8 +151,6 @@ const computerPlayer = function () {
 };
 
 const score = async function (player) {
-  document.removeEventListener("keydown", setKeyPressed);
-  document.removeEventListener("keyup", setKeyPressed);
   clearInterval(ballInterval);
   clearInterval(computerInterval);
   clearInterval(playerInterval);
@@ -143,7 +171,7 @@ const score = async function (player) {
     leftScore.textContent = parseInt(leftScore.textContent) + 1;
   }
   await sleep(500);
-  if (parseInt(leftScore.textContent) >= 5 || parseInt(rightScore.textContent) >= 5) {
+  if (parseInt(leftScore.textContent) >= 21 || parseInt(rightScore.textContent) >= 21) {
     return null;
   } else {
     start();
@@ -159,12 +187,31 @@ const sleep = function (time) {
 const setKeyPressed = function (event) {
   if (event.key == "ArrowUp" || event.key == "ArrowDown") {
     event.preventDefault();
+    if (pause) return null;
     if (event.type == "keyup") {
       return (keyPressed = "");
     } else if (event.type == "keydown") {
       return (keyPressed = event.key);
     }
   }
+  if (event.key == " " && event.type == "keydown") {
+    pause = !pause;
+  }
+  if (event.key == "s" && event.type == "keydown") {
+    start();
+  }
 };
 
-start();
+const setDifficulty = function (event) {
+  hard = hardMin + ((hardMax - hardMin) / 100) * event.target.value;
+  hBallStep = hBallStepMin + ((hBallStepMax - hBallStepMin) / 100) * event.target.value;
+  vBallStep = hBallStep / hBallStepMin;
+
+  if (vBallStep < 1) {
+    vBallStep = 1;
+  }
+
+  difficultyDisplay.textContent = event.target.value;
+};
+
+setUp();
