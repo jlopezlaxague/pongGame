@@ -240,7 +240,6 @@ const setDifficulty = function (event, percent) {
 
   hard = hardMin + ((hardMax - hardMin) / 100) * percentValue;
   difficultyDisplay.textContent = percentValue;
-  console.log("hard", hard);
 };
 
 setUp();
