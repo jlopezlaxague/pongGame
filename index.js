@@ -35,8 +35,8 @@ const setUp = function () {
   left.style.top = `${courtHeigth / 2 - playerHeigth / 2}px`;
   ball.style.top = `${Math.round(Math.random() * courtHeigth)}px`;
   ball.style.left = `${20}px`;
-  setballSpeed(null, 50);
-  setDifficulty(null, 50);
+  setballSpeed(null, 30);
+  setDifficulty(null, 30);
   document.addEventListener("keydown", setKeyPressed);
   document.addEventListener("keyup", setKeyPressed);
   ballSpeedSlider.addEventListener("change", setballSpeed);
